@@ -16,8 +16,9 @@
 // and made it a drop-in replacement for the Wire library.
 //
 
- Ver 1.3.1 : comment added
- Ver 1.3 "SoftwareWire" 
+ Ver 1.3.2: added library.properties file
+ Ver 1.3.1: comment added
+ Ver 1.3: "SoftwareWire" 
  Ver 1.2
  - Aggiunto file keywords.txt (grazie a Leo72)
  Ver 1.1
