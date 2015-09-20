@@ -16,6 +16,7 @@
 // and made it a drop-in replacement for the Wire library.
 //
 
+ Ver 1.4: i2c_stop is safer with extra delay and both SDA and SCL are first set low.
  Ver 1.3.2: added library.properties file
  Ver 1.3.1: comment added
  Ver 1.3: "SoftwareWire" 
