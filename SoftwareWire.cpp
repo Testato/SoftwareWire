@@ -15,6 +15,10 @@
 // 2015, Peter_n renames the library into "SoftwareWire",
 // and made it a drop-in replacement for the Wire library.
 //
+// 21 sep 2015: 
+//  added code to i2c_stop(), since a problem was reported here: 
+//  http://forum.arduino.cc/index.php?topic=348337.0
+//  Added lines have keyword "ADDED1".
 
 
 
@@ -819,9 +823,19 @@ void SoftwareWire::i2c_repstart(void)
 
 // Send a STOP Condition
 //
+// The stop was not recognized by every chip.
+// Some code has been added (with comment "ADDED1"),
+// to be sure that the levels are okay with delays in between.
 void SoftwareWire::i2c_stop(void)
 {
+  i2c_scl_lo();         // ADDED1, it should already be low.
   i2c_sda_lo();
+  
+  // ADDED1, wait to be sure that the slave knows that both are low
+  if (_i2cdelay != 0)              // ADDED1
+    delayMicroseconds(_i2cdelay);  // ADDED1
+  
+  // For a stop, make SCL high wile SDA is still low
   i2c_scl_hi();
   
   // Check if clock stretching by the Slave should be detected.
@@ -841,6 +855,7 @@ void SoftwareWire::i2c_stop(void)
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 
+  // complete the STOP by setting SDA high
   i2c_sda_hi();
   
   // A delay after the STOP for safety.
