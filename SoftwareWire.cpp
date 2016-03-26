@@ -124,10 +124,6 @@
 //
 // The pins are not activated until begin() is called.
 //
-SoftwareWire::SoftwareWire() 
-{
-}
-
 SoftwareWire::SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups, boolean detectClockStretch)
 {
   _sdaPin = sdaPin;
