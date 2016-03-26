@@ -36,6 +36,7 @@
 class SoftwareWire
 {
 public:
+  SoftwareWire();
   SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups = true, boolean detectClockStretch = true);
   ~SoftwareWire();
   void end();
