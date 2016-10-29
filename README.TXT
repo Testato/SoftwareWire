@@ -16,21 +16,19 @@
 // and made it a drop-in replacement for the Wire library.
 //
 
- Ver 1.4: i2c_stop is safer with extra delay,
+ Ver 1.4.1: GPLv3 licence
+ Ver 1.4.0: i2c_stop is safer with extra delay,
           and both SDA and SCL are first set low.
           Thanks to Arduino.cc user fjuedes for testing.
  Ver 1.3.2: added library.properties file
  Ver 1.3.1: comment added
- Ver 1.3: "SoftwareWire" 
- Ver 1.2
- - Aggiunto file keywords.txt (grazie a Leo72)
- Ver 1.1
- - Velocita' I2C selezionabile (30Hz-140kHz)
- Ver 1.0
-- Funzionamento su LCD con controller ST7032i
-- modificata la forma d'onda di uscita per aderire maggiormente allo standard I2C
-- modificata velocita' standard a 100kHz
-
+ Ver 1.3.0: "SoftwareWire" release
+ Ver 1.2.0: added keywords.txt (thanks @Leo72)
+ Ver 1.1.0: selectable I2C speed (30Hz-140kHz)
+ Ver 1.0.0
+- ST7032i LCD driver compatibility
+- bitbanged waveform modified to strictly adhere to I2C standard
+- changed default speed to 100kHz
 
 
 
@@ -42,9 +40,6 @@ The clock pulse stretching is implemented, so the Slave can be another Arduino b
 
 See the Small_example.ino how to use it. 
 Include the library, and create a SoftwareWire object with the sda and scl pin. After that is should be just like the real Wire library.
-
-
-
 
 
 Background information:
