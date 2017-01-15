@@ -80,7 +80,7 @@ private:
   uint16_t _i2cdelay;         // delay in micro seconds for sda and scl bits.
   boolean _pullups;           // using the internal pullups or not
   boolean _stretch;           // should code handle clock stretching by the slave or not.
-  long _timeout;              // timeout in ms. When waiting for a clock pulse stretch.
+  unsigned long _timeout;     // timeout in ms. When waiting for a clock pulse stretch. 2017, Fix issue #6
 
   uint8_t rxBuf[SOFTWAREWIRE_BUFSIZE];   // buffer inside this class, a buffer per SoftwareWire.
   uint8_t rxBufPut;           // index to rxBuf, just after the last valid byte.
