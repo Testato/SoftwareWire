@@ -487,7 +487,10 @@ void SoftwareWire::setClock(uint32_t clock)
 //
 void SoftwareWire::setTimeout(long timeout)    
 {
-  _timeout = timeout;
+  // 2017, fix issue #6. 
+  // A signed long as parameter to be compatible with Arduino libraries.
+  // A unsigned long internal to avoid compiler warnings.
+  _timeout = (unsigned long) timeout;
 }
 
 
