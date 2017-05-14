@@ -494,6 +494,7 @@ void SoftwareWire::setTimeout(long timeout)
 }
 
 
+#ifdef ENABLE_PRINTSTATUS
 //
 // printStatus
 // -----------
@@ -616,6 +617,7 @@ void SoftwareWire::printStatus( HardwareSerial& Ser)
     Ser.println("  done\n");
 #endif    
 }
+#endif
 
 
 //--------------------------------------------------------------------
