@@ -59,7 +59,9 @@ public:
   int readBytes(char * buf, int size);
   int peek(void);
   void setTimeout(long timeout);           // timeout to wait for the I2C bus
+#ifdef ENABLE_PRINTSTATUS
   void printStatus(HardwareSerial& Ser);   // print information to a Serial port
+#endif
 
 private:
   // per object data
