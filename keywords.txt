@@ -4,17 +4,17 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-SoftwareWire KEYWORD1
+SoftwareWire	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-setPins KEYWORD2
+setPins	KEYWORD2
 beginTransmission	KEYWORD2
-write   KEYWORD2
-requestFrom  KEYWORD2
-read KEYWORD2
+write	KEYWORD2
+requestFrom	KEYWORD2
+read	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
