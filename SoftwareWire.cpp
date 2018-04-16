@@ -329,7 +329,7 @@ uint8_t SoftwareWire::requestFrom(int address, int size, boolean sendStop)
 // must be called in:
 // slave tx event callback
 // or after beginTransmission(address)
-uint8_t SoftwareWire::write(uint8_t data)
+size_t SoftwareWire::write(uint8_t data)
 {
   // When there was an error during the transmission, no more bytes are transmitted.
   if( _transmission == SOFTWAREWIRE_NO_ERROR)
@@ -349,7 +349,7 @@ uint8_t SoftwareWire::write(uint8_t data)
 
 
 //
-uint8_t SoftwareWire::write(const uint8_t* data, uint8_t quantity)
+size_t SoftwareWire::write(const uint8_t* data, uint8_t quantity)
 {
   for (uint8_t i=0; i<quantity; i++) 
   {
@@ -361,7 +361,7 @@ uint8_t SoftwareWire::write(const uint8_t* data, uint8_t quantity)
 
 
 //
-uint8_t SoftwareWire::write(char* data)
+size_t SoftwareWire::write(char* data)
 {
   int n = strlen(data);
   write((uint8_t*)data, n);

@@ -21,6 +21,7 @@
 #define SoftwareWire_h
 
 #include <Arduino.h>
+#include <Wire.h>
 
 
 // Transmission status error, the return value of endTransmission()
@@ -33,7 +34,7 @@
 #define SOFTWAREWIRE_BUFSIZE 32        // same as buffer size of Arduino Wire library
 
 
-class SoftwareWire
+class SoftwareWire : public TwoWire
 {
 public:
   SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups = true, boolean detectClockStretch = true);
@@ -49,9 +50,9 @@ public:
   uint8_t endTransmission(boolean sendStop = true);
   uint8_t requestFrom(uint8_t address, uint8_t size, boolean sendStop = true);
   uint8_t requestFrom(int address, int size, boolean sendStop = true);
-  uint8_t write(uint8_t data);
-  uint8_t write(const uint8_t*, uint8_t size);
-  uint8_t write(char* data);
+  size_t write(uint8_t data);
+  size_t write(const uint8_t*, uint8_t size);
+  size_t write(char* data);
   int available(void);
   int read(void);
   int readBytes(uint8_t* buf, uint8_t size);
