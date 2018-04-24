@@ -203,11 +203,13 @@ void SoftwareWire::begin(void)
 
 void SoftwareWire::begin(uint8_t address)
 {
+  (void)(address);      // fix compiler worning on unused parameter https://github.com/Testato/SoftwareWire/issues/7
   begin();              // ignore the address parameter, the Slave part is not implemented.
 }
 
 void SoftwareWire::begin(int address)
 {
+  (void)(address);      // fix compiler worning on unused parameter
   begin();              // ignore the address parameter, the Slave part is not implemented.
 }
 
