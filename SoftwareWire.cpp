@@ -496,8 +496,6 @@ void SoftwareWire::setTimeout(long timeout)
 }
 
 
-#ifdef ENABLE_PRINTSTATUS
-//
 // printStatus
 // -----------
 // Print information to the Serial port
@@ -507,7 +505,7 @@ void SoftwareWire::setTimeout(long timeout)
 // This function is not compatible with the Wire library.
 // When this function is not called, it does not use any memory.
 //
-void SoftwareWire::printStatus( HardwareSerial& Ser)
+void SoftwareWire::printStatus( Print& Ser)
 {
   Ser.println(F("-------------------"));
   Ser.println(F("SoftwareWire Status"));
