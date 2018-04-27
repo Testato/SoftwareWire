@@ -24,8 +24,11 @@ public:
   void end();
   
   void begin();
-  void begin(uint8_t address);
-  void begin(int address);
+
+  // Generate compile error when slave mode begin(address) is used
+  void __attribute__ ((error("I2C/TWI Slave mode is not supported by the SoftwareWire library"))) begin(uint8_t addr);
+  void __attribute__ ((error("I2C/TWI Slave mode is not supported by the SoftwareWire library"))) begin(int addr);
+
   void setClock(uint32_t clock);
   void beginTransmission(uint8_t address);
   void beginTransmission(int address);
