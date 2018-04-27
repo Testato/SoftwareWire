@@ -1,21 +1,3 @@
-// SoftwareWire.h
-//
-// 2008, Raul wrote a I2C with bit banging as an exercise.
-// http://codinglab.blogspot.nl/2008/10/i2c-on-avr-using-bit-banging.html
-//
-// 2010-2012, Tod E. Kurt takes some tricks from Raul,
-// and wrote the SoftI2CMaster library for the Arduino environment.
-// https://github.com/todbot/SoftI2CMaster
-// http://todbot.com/blog/
-//
-// 2014-2015, Testato updates the SoftI2CMaster library to make it faster
-// and to make it compatible with the Arduino 1.x API
-// Also changed I2C waveform and added speed selection.
-//
-// 2015, Peter_n renames the library into "SoftwareWire",
-// and made it a drop-in replacement for the Wire library.
-//
-
 
 #ifndef SoftwareWire_h
 #define SoftwareWire_h
