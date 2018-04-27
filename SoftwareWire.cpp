@@ -168,6 +168,7 @@ void SoftwareWire::end()
 }
 
 
+// begin(void) - enter master mode
 // The pins are not changed until begin() is called.
 void SoftwareWire::begin(void)
 {
@@ -185,20 +186,6 @@ void SoftwareWire::begin(void)
   if( _pullups)
     delay(2);           // 1ms didn't always work.
 }
-
-
-void SoftwareWire::begin(uint8_t address)
-{
-  (void)(address);      // fix compiler worning on unused parameter https://github.com/Testato/SoftwareWire/issues/7
-  begin();              // ignore the address parameter, the Slave part is not implemented.
-}
-
-void SoftwareWire::begin(int address)
-{
-  (void)(address);      // fix compiler worning on unused parameter
-  begin();              // ignore the address parameter, the Slave part is not implemented.
-}
-
 
 //
 // beginTransmission starts the I2C transmission immediate.
