@@ -7,25 +7,34 @@ The clock pulse stretching is implemented, so the Slave can be another Arduino b
 See the Small_example.ino how to use it. Include the library, and create a SoftwareWire object with the sda and scl pin.   After that is should be just like the real Wire library.  
 
 ### Version history
+
 Ver 1.5.0 
 - Added empty constructor
 - Updated printStatus() - by @bperrybap
 - Removed I2C Slave functions and added error message - by @bperrybap
+
 Ver 1.4.1
 - GPLv3 licence
+
 Ver 1.4.0
 - i2c_stop is safer with extra delay, and both SDA and SCL are first set low.
 - Thanks to Arduino.cc user fjuedes for testing.
+
 Ver 1.3.2
 - Added library.properties file
+
 Ver 1.3.1
 - Comment added
+
 Ver 1.3.0
 - "SoftwareWire" release
+
 Ver 1.2.0
 - Added keywords.txt - by @Leo72
+
 Ver 1.1.0
 - Selectable I2C speed (30Hz-140kHz)
+
 Ver 1.0.0
 - ST7032i LCD driver compatibility
 - Bitbanged waveform modified to strictly adhere to I2C standard
