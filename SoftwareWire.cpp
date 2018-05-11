@@ -1,26 +1,3 @@
-// SoftwareWire.cpp
-//
-// 2008, Raul wrote a I2C with bit banging as an exercise.
-// http://codinglab.blogspot.nl/2008/10/i2c-on-avr-using-bit-banging.html
-//
-// 2010-2012, Tod E. Kurt takes some tricks from Raul,
-// and wrote the SoftI2CMaster library for the Arduino environment.
-// https://github.com/todbot/SoftI2CMaster
-// http://todbot.com/blog/
-//
-// 2014-2015, Testato updates the SoftI2CMaster library to make it faster
-// and to make it compatible with the Arduino 1.x API
-// Also changed I2C waveform and added speed selection.
-//
-// 2015, Peter_n renames the library into "SoftwareWire",
-// and made it a drop-in replacement for the Wire library.
-//
-// 21 sep 2015: 
-//  added code to i2c_stop(), since a problem was reported here: 
-//  http://forum.arduino.cc/index.php?topic=348337.0
-//  Added lines have keyword "ADDED1".
-
-
 
 // Signal differences
 // ------------------
@@ -71,7 +48,12 @@
 //    Every software i2c bus requires 2 pins, 
 //    and every SoftwareWire object requires 59 bytes at the moment.
 //
-//
+
+
+
+//  added code to i2c_stop(), since a problem was reported here: 
+//  http://forum.arduino.cc/index.php?topic=348337.0
+//  Added lines have keyword "ADDED1".
 
 
 // Use the next define to run a i2c_scanner inside the printStatus() function.
@@ -124,6 +106,10 @@
 //
 // The pins are not activated until begin() is called.
 //
+SoftwareWire::SoftwareWire() 
+{
+}
+
 SoftwareWire::SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups, boolean detectClockStretch)
 {
   _sdaPin = sdaPin;
@@ -182,6 +168,7 @@ void SoftwareWire::end()
 }
 
 
+// begin(void) - enter master mode
 // The pins are not changed until begin() is called.
 void SoftwareWire::begin(void)
 {
@@ -199,18 +186,6 @@ void SoftwareWire::begin(void)
   if( _pullups)
     delay(2);           // 1ms didn't always work.
 }
-
-
-void SoftwareWire::begin(uint8_t address)
-{
-  begin();              // ignore the address parameter, the Slave part is not implemented.
-}
-
-void SoftwareWire::begin(int address)
-{
-  begin();              // ignore the address parameter, the Slave part is not implemented.
-}
-
 
 //
 // beginTransmission starts the I2C transmission immediate.
@@ -494,8 +469,6 @@ void SoftwareWire::setTimeout(long timeout)
 }
 
 
-#ifdef ENABLE_PRINTSTATUS
-//
 // printStatus
 // -----------
 // Print information to the Serial port
@@ -505,7 +478,7 @@ void SoftwareWire::setTimeout(long timeout)
 // This function is not compatible with the Wire library.
 // When this function is not called, it does not use any memory.
 //
-void SoftwareWire::printStatus( HardwareSerial& Ser)
+void SoftwareWire::printStatus( Print& Ser)
 {
   Ser.println(F("-------------------"));
   Ser.println(F("SoftwareWire Status"));
@@ -617,7 +590,6 @@ void SoftwareWire::printStatus( HardwareSerial& Ser)
     Ser.println("  done\n");
 #endif    
 }
-#endif
 
 
 //--------------------------------------------------------------------
