@@ -8,6 +8,10 @@ See the Small_example.ino how to use it. Include the library, and create a Softw
 
 ### Version history
 
+Ver 1.5.1
+- Inherit from TwoWire - by @mhenman
+- Repeated start fix - by @MortezaAghazamani
+
 Ver 1.5.0 
 - Added empty constructor
 - Updated printStatus() - by @bperrybap
