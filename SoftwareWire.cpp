@@ -790,11 +790,6 @@ void SoftwareWire::i2c_repstart(void)
   
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
-
-  i2c_sda_lo();                        // force SDA low
-  
-  if (_i2cdelay != 0)
-    delayMicroseconds(_i2cdelay);
 }
 
 
