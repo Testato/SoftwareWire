@@ -1,7 +1,7 @@
 
 // Signal differences
 // ------------------
-//    When the AVR microcontroller is set into hardware I2C mode, 
+//    When the AVR microcontroller is set into hardware I2C mode,
 //    the pins follow the I2C specifications for voltage levels and current.
 //    For example the current to pull SDA or SCL low is maximum 3mA.
 //
@@ -12,7 +12,7 @@
 //
 //    In most cases the software I2C should work.
 //    With longer wires or with non-matching voltage levels, the result is unpredictable.
-//    
+//
 //
 //
 // Clock pulse stretching
@@ -28,7 +28,7 @@
 //
 //    Using millis() instead of micros() is faster.
 //    That is why millis() is used for the timeout of the clock pulse stretching.
-//    
+//
 //
 //
 // Arduino Stream class
@@ -45,13 +45,13 @@
 //    to create a number of software i2c busses.
 //    That makes it possible to use a number of I2C devices,
 //    which have the same I2C address.
-//    Every software i2c bus requires 2 pins, 
+//    Every software i2c bus requires 2 pins,
 //    and every SoftwareWire object requires 59 bytes at the moment.
 //
 
 
 
-//  added code to i2c_stop(), since a problem was reported here: 
+//  added code to i2c_stop(), since a problem was reported here:
 //  http://forum.arduino.cc/index.php?topic=348337.0
 //  Added lines have keyword "ADDED1".
 
@@ -59,20 +59,19 @@
 // Use the next define to run a i2c_scanner inside the printStatus() function.
 // #define ENABLE_I2C_SCANNER
 
-
 #include "SoftwareWire.h"
 
 
 // Sets SDA low and drives output.
-// The SDA may not be HIGH output, so first the output register is cleared 
+// The SDA may not be HIGH output, so first the output register is cleared
 // (clearing internal pullup resistor), after that the SDA is set as output.
 #define i2c_sda_lo()              \
   *_sdaPortReg &= ~_sdaBitMask;   \
   *_sdaDirReg  |=  _sdaBitMask;
-  
+
 
 // sets SCL low and drives output.
-// The SCL may not be HIGH output, so first the output register is cleared 
+// The SCL may not be HIGH output, so first the output register is cleared
 // (clearing internal pullup resistor), after that the SCL is set as output.
 #define i2c_scl_lo()              \
   *_sclPortReg &= ~_sclBitMask;   \
@@ -106,7 +105,7 @@
 //
 // The pins are not activated until begin() is called.
 //
-SoftwareWire::SoftwareWire() 
+SoftwareWire::SoftwareWire()
 {
 }
 
@@ -116,13 +115,13 @@ SoftwareWire::SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups, bool
   _sclPin = sclPin;
   _pullups = pullups;
   _stretch = detectClockStretch;
-  
+
   setClock( 100000UL);       // set default 100kHz
-  
-  // Set default timeout to 1000 ms. 
+
+  // Set default timeout to 1000 ms.
   // 1 second is very long, 10ms would be more appropriate.
   // However, the Arduino libraries use often a default timeout of 1 second.
-  setTimeout( 1000L);        
+  setTimeout( 1000L);
 
   // Turn Arduino pin numbers into PORTx, DDRx, and PINx
   uint8_t port;
@@ -141,7 +140,7 @@ SoftwareWire::SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups, bool
 }
 
 
-// 
+//
 // The destructor releases the pins Software I2C bus for other use.
 //
 SoftwareWire::~SoftwareWire()
@@ -159,11 +158,11 @@ void SoftwareWire::end()
   // Remember the pullups variable.
   // They will be used again when begin() is called.
   boolean pullupsCopy = _pullups;
-  
+
   _pullups = false;
   i2c_sda_hi();          // release sda, remove any pullup
   i2c_scl_hi();          // release scl, remove any pullup
-  
+
   _pullups = pullupsCopy;
 }
 
@@ -179,8 +178,8 @@ void SoftwareWire::begin(void)
 
   // Some tests could be added here, to check if the SDA and SCL are really turning high.
   // Even some tests for shortcuts could be done here.
-  
-  
+
+
   // When a I2C transmission would start immediate, it could fail when only the internal pullup resistors
   // are used, and the signals were just now turned high with i2c_init().
   if( _pullups)
@@ -194,13 +193,13 @@ void SoftwareWire::beginTransmission(uint8_t address)
 {
   // Reset error returned by endTransmission.
   _transmission = SOFTWAREWIRE_NO_ERROR;
-  
+
   // check return value of the start condition.
   // It indicates if the i2c bus is okay.
-  if(i2c_start())             
+  if(i2c_start())
   {
     uint8_t rc = i2c_write((address << 1) | 0);       // The r/w bit is zero for write
-    
+
     if( rc == 0)                                      // a sda zero from Slave for the 9th bit is ack
     {
       _transmission = SOFTWAREWIRE_NO_ERROR;
@@ -232,7 +231,7 @@ uint8_t SoftwareWire::endTransmission(boolean sendStop)
     i2c_stop();
   else
     i2c_repstart();
-  
+
   return(_transmission);          // return the transmission status that was set during writing address and data
 }
 
@@ -254,17 +253,17 @@ uint8_t SoftwareWire::requestFrom(uint8_t address, uint8_t size, boolean sendSto
   rxBufGet = 0;
 
   boolean bus_okay = i2c_start();
-  
+
   if(bus_okay)
   {
     uint8_t rc = i2c_write((address << 1) | 1);          // The r/w bit is '1' to read
-    
+
     if( rc == 0)                                         // a sda zero from Slave for the 9th bit is ack
     {
       _transmission = SOFTWAREWIRE_NO_ERROR;
-  
+
       // TODO: check if the Slave returns less bytes than requested.
-      
+
       for(; n<size; n++)
       {
         if( n < (size - 1))
@@ -284,7 +283,7 @@ uint8_t SoftwareWire::requestFrom(uint8_t address, uint8_t size, boolean sendSto
     // There was a bus error.
     _transmission = SOFTWAREWIRE_OTHER;
   }
-  
+
   if(sendStop || _transmission != SOFTWAREWIRE_NO_ERROR)
     i2c_stop();
   else
@@ -318,33 +317,24 @@ size_t SoftwareWire::write(uint8_t data)
       _transmission = SOFTWAREWIRE_ADDRESS_NACK;
     }
   }
-    
+
   return(1);             // ignore any errors, return the number of bytes that are written.
 }
 
 
 //
-size_t SoftwareWire::write(const uint8_t* data, uint8_t quantity)
+size_t SoftwareWire::write(const uint8_t* data, size_t quantity)
 {
-  for (uint8_t i=0; i<quantity; i++) 
+  for (size_t i=0; i<quantity; i++)
   {
     write(data[i]);
   }
-  
+
   return(quantity);          // ignore any errors, return the number of bytes that are written.
 }
 
 
 //
-size_t SoftwareWire::write(char* data)
-{
-  int n = strlen(data);
-  write((uint8_t*)data, n);
-  
-  return(n);           // ignore any errors, return the number of bytes that are written.
-}
-
-
 int SoftwareWire::available(void)
 {
   return(rxBufPut - rxBufGet);
@@ -355,7 +345,7 @@ int SoftwareWire::available(void)
 int SoftwareWire::peek(void)
 {
   int data;
-  
+
   if( rxBufPut > rxBufGet)
   {
     data = rxBuf[rxBufGet];
@@ -364,7 +354,7 @@ int SoftwareWire::peek(void)
   {
     data = -1;
   }
-  
+
   return(data);
 }
 
@@ -375,7 +365,7 @@ int SoftwareWire::peek(void)
 int SoftwareWire::read(void)
 {
   int data;
-  
+
   if( rxBufPut > rxBufGet)
   {
     data = rxBuf[rxBufGet];
@@ -385,7 +375,7 @@ int SoftwareWire::read(void)
   {
     data = -1;
   }
-  
+
   return(data);
 }
 
@@ -394,7 +384,7 @@ int SoftwareWire::readBytes(uint8_t* buf, uint8_t size)
 {
   int data;
   int n;
-  
+
   for( n=0; n<size; n++)
   {
     data = read();
@@ -403,7 +393,7 @@ int SoftwareWire::readBytes(uint8_t* buf, uint8_t size)
     else
       buf[n] = (uint8_t) data;
   }
-  
+
   return(n);
 }
 
@@ -442,12 +432,12 @@ void SoftwareWire::setClock(uint32_t clock)
   //   500=1kHz
   //   5000=100Hz
   //   16383=minspeed=30Hz  - delayMicroseconds() max value reference arduino
-  // 
+  //
 
   // The _i2cdelay is an uint16_t
   _i2cdelay = ( (F_CPU / 32L) / clock );               // The delay in microseconds, '32' is for this code.
   unsigned int delayByCode = (F_CPU / 5000000L);       // Add some delay for the code, just a guess
-  
+
   if( _i2cdelay > delayByCode)
     _i2cdelay -= delayByCode;
   else
@@ -456,13 +446,13 @@ void SoftwareWire::setClock(uint32_t clock)
 }
 
 
-// 
+//
 // Set the timeout in milliseconds.
 // At this moment, it is only used for timeout when the Slave is stretching the clock pulse.
 //
-void SoftwareWire::setTimeout(long timeout)    
+void SoftwareWire::setTimeout(long timeout)
 {
-  // 2017, fix issue #6. 
+  // 2017, fix issue #6.
   // A signed long as parameter to be compatible with Arduino libraries.
   // A unsigned long internal to avoid compiler warnings.
   _timeout = (unsigned long) timeout;
@@ -520,7 +510,7 @@ void SoftwareWire::printStatus( Print& Ser)
     Ser.print(F(" "));
   }
   Ser.println();
-  
+
   Ser.print(F("  _sdaPin = "));
   Ser.println(_sdaPin);
   Ser.print(F("  _sclPin = "));
@@ -529,24 +519,24 @@ void SoftwareWire::printStatus( Print& Ser)
   Ser.println(_sdaBitMask, HEX);
   Ser.print(F("  _sclBitMask = 0x"));
   Ser.println(_sclBitMask, HEX);
-  Ser.print(F("  _sdaPortReg = "));  
+  Ser.print(F("  _sdaPortReg = "));
   Ser.println( (uint16_t) _sdaPortReg, HEX);
-  Ser.print(F("  _sclPortReg = "));  
+  Ser.print(F("  _sclPortReg = "));
   Ser.println( (uint16_t) _sclPortReg, HEX);
-  Ser.print(F("  _sdaDirReg = "));  
+  Ser.print(F("  _sdaDirReg = "));
   Ser.println( (uint16_t) _sdaDirReg, HEX);
-  Ser.print(F("  _sclDirReg = "));  
+  Ser.print(F("  _sclDirReg = "));
   Ser.println( (uint16_t) _sclDirReg, HEX);
-  Ser.print(F("  _sdaPinReg = "));  
+  Ser.print(F("  _sdaPinReg = "));
   Ser.println( (uint16_t) _sdaPinReg, HEX);
-  Ser.print(F("  _sclPinReg = "));  
+  Ser.print(F("  _sclPinReg = "));
   Ser.println( (uint16_t) _sclPinReg, HEX);
-  
+
   Ser.print(F("  line state sda = "));
   Ser.println(i2c_sda_read());
   Ser.print(F("  line state scl = "));
   Ser.println(i2c_scl_read());
-  
+
 #ifdef ENABLE_I2C_SCANNER
   // i2c_scanner
   // Taken from : http://playground.arduino.cc/Main/I2cScanner
@@ -558,7 +548,7 @@ void SoftwareWire::printStatus( Print& Ser)
   Ser.println("  Scanning...");
 
   nDevices = 0;
-  for(address=1; address<127; address++ ) 
+  for(address=1; address<127; address++ )
   {
     // The i2c_scanner uses the return value of
     // the Write.endTransmisstion to see if
@@ -569,26 +559,26 @@ void SoftwareWire::printStatus( Print& Ser)
     if (error == 0)
     {
       Ser.print("  I2C device found at address 0x");
-      if (address<16) 
+      if (address<16)
         Ser.print("0");
       Ser.print(address,HEX);
       Ser.println("  !");
 
       nDevices++;
     }
-    else if (error==4) 
+    else if (error==4)
     {
       Ser.print("  Unknow error at address 0x");
-      if (address<16) 
+      if (address<16)
         Ser.print("0");
       Ser.println(address,HEX);
-    }    
+    }
   }
   if (nDevices == 0)
     Ser.println("  No I2C devices found\n");
   else
     Ser.println("  done\n");
-#endif    
+#endif
 }
 
 
@@ -612,12 +602,12 @@ void SoftwareWire::i2c_writebit(uint8_t c)
   {
     i2c_sda_hi();
   }
-  
+
   if (_i2cdelay != 0)               // This delay is not needed, but it makes it safer
     delayMicroseconds(_i2cdelay);   // This delay is not needed, but it makes it safer
-  
+
   i2c_scl_hi();                     // clock high: the Slave will read the sda signal
-  
+
   // Check if clock stretching by the Slave should be detected.
   if( _stretch)
   {
@@ -637,7 +627,7 @@ void SoftwareWire::i2c_writebit(uint8_t c)
     delayMicroseconds(_i2cdelay);
 
   i2c_scl_lo();
-  
+
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 }
@@ -664,9 +654,9 @@ uint8_t SoftwareWire::i2c_readbit(void)
   // After the clock stretching, this delay has still be done before reading sda.
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
-  
+
   uint8_t c = i2c_sda_read();
-  
+
   i2c_scl_lo();
 
   if (_i2cdelay != 0)
@@ -689,7 +679,7 @@ uint8_t SoftwareWire::i2c_readbit(void)
 // After both lines are high, the delay is changed into 4 times the normal delay.
 // That did reduce the error with the first transmission.
 // It was tested with Arduino Uno with clock of 100kHz (_i2cdelay=2).
-// 
+//
 void SoftwareWire::i2c_init(void)
 {
   i2c_scl_hi();
@@ -711,10 +701,10 @@ void SoftwareWire::i2c_init(void)
 // Send a START Condition
 //
 // The SDA and SCL should already be high.
-// 
+//
 // The SDA and SCL will both be low after this function.
 // When writing the address, the Master makes them high.
-// 
+//
 // Return value:
 //   true  : software i2c bus is okay.
 //   false : failed, some kind of hardware bus error.
@@ -726,7 +716,7 @@ boolean SoftwareWire::i2c_start(void)
 
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
-    
+
   // Both the sda and scl should be high.
   // If not, there might be a hardware problem with the i2c bus signal lines.
   // This check was added to prevent that a shortcut of sda would be seen as a valid ACK
@@ -740,12 +730,12 @@ boolean SoftwareWire::i2c_start(void)
   else
   {
     i2c_sda_lo();
-    
+
     if (_i2cdelay != 0)
       delayMicroseconds(_i2cdelay);
-  
+
     i2c_scl_lo();
-    
+
     if (_i2cdelay != 0)
       delayMicroseconds(_i2cdelay);
   }
@@ -755,7 +745,7 @@ boolean SoftwareWire::i2c_start(void)
 
 //
 // Repeated START instead of a STOP
-// 
+//
 // TODO: check if the repeated start actually works.
 //
 void SoftwareWire::i2c_repstart(void)
@@ -764,17 +754,17 @@ void SoftwareWire::i2c_repstart(void)
 //  i2c_scl_hi();               // ??????
 
   i2c_scl_lo();                         // force SCL low
-  
+
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 
   i2c_sda_hi();                        // release SDA
-  
+
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 
   i2c_scl_hi();                        // release SCL
-  
+
   // Check if clock stretching by the Slave should be detected.
   if( _stretch)
   {
@@ -787,7 +777,7 @@ void SoftwareWire::i2c_repstart(void)
         break;
     };
   }
-  
+
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 }
@@ -802,14 +792,14 @@ void SoftwareWire::i2c_stop(void)
 {
   i2c_scl_lo();         // ADDED1, it should already be low.
   i2c_sda_lo();
-  
+
   // ADDED1, wait to be sure that the slave knows that both are low
   if (_i2cdelay != 0)              // ADDED1
     delayMicroseconds(_i2cdelay);  // ADDED1
-  
+
   // For a stop, make SCL high wile SDA is still low
   i2c_scl_hi();
-  
+
   // Check if clock stretching by the Slave should be detected.
   if( _stretch)
   {
@@ -823,13 +813,13 @@ void SoftwareWire::i2c_stop(void)
         break;
     };
   }
-   
+
   if (_i2cdelay != 0)
     delayMicroseconds(_i2cdelay);
 
   // complete the STOP by setting SDA high
   i2c_sda_hi();
-  
+
   // A delay after the STOP for safety.
   // It is not known how fast the next START will happen.
   if (_i2cdelay != 0)
@@ -843,7 +833,7 @@ void SoftwareWire::i2c_stop(void)
 //
 uint8_t SoftwareWire::i2c_write( uint8_t c )
 {
-  for ( uint8_t i=0; i<8; i++) 
+  for ( uint8_t i=0; i<8; i++)
   {
     i2c_writebit(c & 0x80);           // highest bit first
     c <<= 1;
@@ -860,7 +850,7 @@ uint8_t SoftwareWire::i2c_read(boolean ack)
 {
   uint8_t res = 0;
 
-  for(uint8_t i=0; i<8; i++) 
+  for(uint8_t i=0; i<8; i++)
   {
     res <<= 1;
     res |= i2c_readbit();
@@ -880,4 +870,3 @@ uint8_t SoftwareWire::i2c_read(boolean ack)
 
   return(res);
 }
-
