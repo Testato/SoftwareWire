@@ -23,7 +23,7 @@ public:
   SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups = true, boolean detectClockStretch = true);
   ~SoftwareWire();
   void end();
-  
+
   void begin();
 
   // Generate compile error when slave mode begin(address) is used
@@ -36,15 +36,14 @@ public:
   uint8_t endTransmission(boolean sendStop = true);
   uint8_t requestFrom(uint8_t address, uint8_t size, boolean sendStop = true);
   uint8_t requestFrom(int address, int size, boolean sendStop = true);
-  size_t write(uint8_t data);
-  size_t write(const uint8_t*, uint8_t size);
-  size_t write(char* data);
-  int available(void);
-  int read(void);
+  size_t write(uint8_t data) override;
+  size_t write(const uint8_t *data, size_t quantity) override;
+  int available(void) override;
+  int read(void) override;
   int readBytes(uint8_t* buf, uint8_t size);
   int readBytes(char * buf, uint8_t size);
   int readBytes(char * buf, int size);
-  int peek(void);
+  int peek(void) override;
   void setTimeout(long timeout);  // timeout to wait for the I2C bus
   void printStatus(Print& Ser);   // print information using specified object class
 
@@ -56,7 +55,7 @@ private:
   uint8_t _sclPin;
   uint8_t _sdaBitMask;
   uint8_t _sclBitMask;
-  
+
   volatile uint8_t *_sdaPortReg;
   volatile uint8_t *_sclPortReg;
   volatile uint8_t *_sdaDirReg;
@@ -73,9 +72,9 @@ private:
   uint8_t rxBuf[SOFTWAREWIRE_BUFSIZE];   // buffer inside this class, a buffer per SoftwareWire.
   uint8_t rxBufPut;           // index to rxBuf, just after the last valid byte.
   uint8_t rxBufGet;           // index to rxBuf, the first new to be read byte.
-  
+
   // private methods
-  
+
   void i2c_writebit( uint8_t c );
   uint8_t i2c_readbit(void);
   void i2c_init(void);
@@ -87,4 +86,3 @@ private:
 };
 
 #endif // SoftwareWire_h
-
