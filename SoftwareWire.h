@@ -33,8 +33,10 @@ public:
   void setClock(uint32_t clock);
   void beginTransmission(uint8_t address);
   void beginTransmission(int address);
-  uint8_t endTransmission(boolean sendStop = true);
-  uint8_t requestFrom(uint8_t address, uint8_t size, boolean sendStop = true);
+  uint8_t endTransmission(void);
+  uint8_t endTransmission(boolean sendStop);
+  uint8_t requestFrom(uint8_t address, uint8_t size);
+  uint8_t requestFrom(uint8_t address, uint8_t size, boolean sendStop);
   uint8_t requestFrom(int address, int size, boolean sendStop = true);
   size_t write(uint8_t data) override;
   size_t write(const uint8_t *data, size_t quantity) override;
