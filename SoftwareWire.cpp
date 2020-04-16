@@ -235,6 +235,17 @@ uint8_t SoftwareWire::endTransmission(boolean sendStop)
   return(_transmission);          // return the transmission status that was set during writing address and data
 }
 
+//
+uint8_t SoftwareWire::endTransmission(uint8_t sendStop)
+{
+  return endTransmission((boolean) sendStop);
+}
+
+//
+uint8_t SoftwareWire::endTransmission()
+{
+  return endTransmission(true);
+}
 
 //
 // The requestFrom() read the data from the I2C bus and stores it in a buffer.
@@ -292,6 +303,17 @@ uint8_t SoftwareWire::requestFrom(uint8_t address, uint8_t size, boolean sendSto
   return( n);
 }
 
+//
+uint8_t SoftwareWire::requestFrom(uint8_t address, uint8_t size)
+{
+  return requestFrom(address, size, true)
+}
+
+//
+uint8_t SoftwareWire::requestFrom(uint8_t address, uint8_t size, uint8_t sendStop)
+{
+  return requestFrom(address, size, (boolean) sendStop)
+}
 
 //
 uint8_t SoftwareWire::requestFrom(int address, int size, boolean sendStop)
@@ -299,6 +321,17 @@ uint8_t SoftwareWire::requestFrom(int address, int size, boolean sendStop)
   return requestFrom( (uint8_t) address, (uint8_t) size, sendStop);
 }
 
+//
+uint8_t SoftwareWire::requestFrom(int address, int size)
+{
+  return requestFrom(address, size, true)
+}
+
+//
+uint8_t SoftwareWire::requestFrom(int address, int size, uint8_t sendStop)
+{
+  return requestFrom(address, size, (boolean) sendStop)
+}
 
 // must be called in:
 // slave tx event callback
