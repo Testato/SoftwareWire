@@ -21,7 +21,7 @@ class SoftwareWire : public TwoWire
 public:
   SoftwareWire();
   SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups = true, boolean detectClockStretch = true);
-  virtual ~SoftwareWire();
+  ~SoftwareWire();
   void end();
 
   void begin();
