@@ -3,7 +3,6 @@
 #define SoftwareWire_h
 
 #include <Arduino.h>
-#include <Wire.h>
 
 
 // Transmission status error, the return value of endTransmission()
