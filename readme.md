@@ -4,9 +4,14 @@ More than one software I2C bus can be created.
 It can be installed via the arduino library manager or manually by copying the files to your sketchbook\libraries folder.  
 The SoftwareWire is only I2C Master mode.  
 The clock pulse stretching is implemented, so the Slave can be another Arduino board.  
-See the Small_example.ino how to use it. Include the library, and create a SoftwareWire object with the sda and scl pin.   After that is should be just like the real Wire library.  
+See the Small_example.ino how to use it. Include the library, and create a SoftwareWire object with the sda and scl pin. After that is should be just like the real Wire library.  
 
 ### Version history
+
+Ver 1.6.0
+- Remove virtual on destructor - by @bxparks
+- Remove inheritance from TwoWire - by @bxparks
+- Remove including Wire.h - by @bxparks
 
 Ver 1.5.1
 - Inherit from TwoWire - by @mhenman
