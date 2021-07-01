@@ -3,7 +3,6 @@
 #define SoftwareWire_h
 
 #include <Arduino.h>
-#include <Wire.h>
 
 
 // Transmission status error, the return value of endTransmission()
@@ -16,12 +15,12 @@
 #define SOFTWAREWIRE_BUFSIZE 32        // same as buffer size of Arduino Wire library
 
 
-class SoftwareWire : public TwoWire
+class SoftwareWire
 {
 public:
   SoftwareWire();
   SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups = true, boolean detectClockStretch = true);
-  virtual ~SoftwareWire();
+  ~SoftwareWire();
   void end();
 
   void begin();
@@ -36,14 +35,14 @@ public:
   uint8_t endTransmission(boolean sendStop = true);
   uint8_t requestFrom(uint8_t address, uint8_t size, boolean sendStop = true);
   uint8_t requestFrom(int address, int size, boolean sendStop = true);
-  size_t write(uint8_t data) override;
-  size_t write(const uint8_t *data, size_t quantity) override;
-  int available(void) override;
-  int read(void) override;
+  size_t write(uint8_t data);
+  size_t write(const uint8_t *data, size_t quantity);
+  int available(void);
+  int read(void);
   int readBytes(uint8_t* buf, uint8_t size);
   int readBytes(char * buf, uint8_t size);
   int readBytes(char * buf, int size);
-  int peek(void) override;
+  int peek(void);
   void setTimeout(long timeout);  // timeout to wait for the I2C bus
   void printStatus(Print& Ser);   // print information using specified object class
 
