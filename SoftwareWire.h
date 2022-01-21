@@ -52,15 +52,33 @@ private:
 
   uint8_t _sdaPin;
   uint8_t _sclPin;
+#if defined(ARDUINO_ARCH_STM32)
+  uint32_t _sdaBitMask;
+  uint32_t _sdaModeShift;
+  uint32_t _sclBitMask;
+  uint32_t _sclModeShift;
+#else
   uint8_t _sdaBitMask;
   uint8_t _sclBitMask;
+#endif
 
+
+
+#if defined(ARDUINO_ARCH_STM32)
+  volatile uint32_t *_sdaPortReg;
+  volatile uint32_t *_sclPortReg;
+  volatile uint32_t *_sdaDirReg;
+  volatile uint32_t *_sclDirReg;
+  volatile uint32_t *_sdaPinReg;
+  volatile uint32_t *_sclPinReg;
+#else
   volatile uint8_t *_sdaPortReg;
   volatile uint8_t *_sclPortReg;
   volatile uint8_t *_sdaDirReg;
   volatile uint8_t *_sclDirReg;
   volatile uint8_t *_sdaPinReg;
   volatile uint8_t *_sclPinReg;
+#endif
 
   uint8_t _transmission;      // transmission status, returned by endTransmission(). 0 is no error.
   uint16_t _i2cdelay;         // delay in micro seconds for sda and scl bits.

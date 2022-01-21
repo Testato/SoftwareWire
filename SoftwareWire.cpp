@@ -61,43 +61,111 @@
 
 #include "SoftwareWire.h"
 
+#if defined(ARDUINO_ARCH_STM32)
+#if defined(STM32F1xx)
+#define GPIO_MODE_INPUT_CLEAR_BIT   (GPIO_CRL_MODE0_0 | GPIO_CRL_MODE0_1 | GPIO_CRL_CNF0_0)
+#define GPIO_MODE_INPUT_SET_BIT     GPIO_CRL_CNF0_1
+#define GPIO_MODE_OUTPUT_CLEAR_BIT  (GPIO_CRL_CNF0_0 | GPIO_CRL_CNF0_1)
+#define GPIO_MODE_OUTPUT_SET_BIT    (GPIO_CRL_MODE0_0 | GPIO_CRL_MODE0_1)
+#define I2C_SET_MODE_LOW(_reg, _shift)  \
+              MODIFY_REG(*_reg, GPIO_MODE_OUTPUT_CLEAR_BIT << (2 * _shift) % 32, \
+              GPIO_MODE_OUTPUT_SET_BIT << (2 * _shift) % 32 );
+#define I2C_SET_MODE_HIGH(_reg, _shift)  \
+              MODIFY_REG(*_reg, GPIO_MODE_INPUT_CLEAR_BIT << (2 * _shift) % 32,  \
+              GPIO_MODE_INPUT_SET_BIT << (2 * _shift) % 32 );
+
+#else
+#if defined(GPIO_MODER_MODE0_0)
+#define GPIO_MODE_INPUT_CLEAR_BIT   (GPIO_MODER_MODE0_0 | GPIO_MODER_MODE0_1)
+#define GPIO_MODE_INPUT_SET_BIT     0
+#define GPIO_MODE_OUTPUT_CLEAR_BIT  GPIO_MODER_MODE0_1
+#define GPIO_MODE_OUTPUT_SET_BIT    GPIO_MODER_MODE0_0
+
+#elif defined(GPIO_MODER_MODER0_0)
+#define GPIO_MODE_INPUT_CLEAR_BIT   (GPIO_MODER_MODER0_0 | GPIO_MODER_MODER0_1)
+#define GPIO_MODE_INPUT_SET_BIT     0
+#define GPIO_MODE_OUTPUT_CLEAR_BIT  GPIO_MODER_MODER0_1
+#define GPIO_MODE_OUTPUT_SET_BIT    GPIO_MODER_MODE0R_0
+
+#else
+#error GPIO Mode not implemented
+#endif // GPIO_MODER_MODE0_0
+
+#define I2C_SET_MODE_LOW(_reg, _shift)                                  \
+              MODIFY_REG(*_reg, GPIO_MODE_OUTPUT_CLEAR_BIT << _shift,   \
+                         GPIO_MODE_OUTPUT_SET_BIT << _shift);
+#define I2C_SET_MODE_HIGH(_reg, _shift)                                 \
+              MODIFY_REG(*_reg, GPIO_MODE_INPUT_CLEAR_BIT << _shift,    \
+                         GPIO_MODE_INPUT_SET_BIT << _shift);
+
+#endif // STM32F1xx
+#endif // ARDUINO_ARCH_STM32
 
 // Sets SDA low and drives output.
 // The SDA may not be HIGH output, so first the output register is cleared
 // (clearing internal pullup resistor), after that the SDA is set as output.
+#if defined(ARDUINO_ARCH_STM32)
+#define i2c_sda_lo()              \
+  *_sdaPortReg &= ~_sdaBitMask;   \
+  I2C_SET_MODE_LOW(_sdaDirReg, _sdaModeShift);
+#else
 #define i2c_sda_lo()              \
   *_sdaPortReg &= ~_sdaBitMask;   \
   *_sdaDirReg  |=  _sdaBitMask;
+#endif
 
 
 // sets SCL low and drives output.
 // The SCL may not be HIGH output, so first the output register is cleared
 // (clearing internal pullup resistor), after that the SCL is set as output.
+#if defined(ARDUINO_ARCH_STM32)
+#define i2c_scl_lo()              \
+  *_sclPortReg &= ~_sclBitMask;   \
+  I2C_SET_MODE_LOW(_sclDirReg, _sclModeShift);
+#else
 #define i2c_scl_lo()              \
   *_sclPortReg &= ~_sclBitMask;   \
   *_sclDirReg  |=  _sclBitMask;
+#endif
 
 
 // Set SDA high and to input (releases pin) (i.e. change to input, turn on pullup).
 // The SDA may not become HIGH output. Therefore the pin is first set to input,
 // after that, a pullup resistor is switched on if needed.
+#if defined(ARDUINO_ARCH_STM32)
+#define i2c_sda_hi()                             \
+  I2C_SET_MODE_HIGH(_sdaDirReg, _sdaModeShift);  \
+  if(_pullups) { *_sdaPortReg |= _sdaBitMask; }
+#else
 #define i2c_sda_hi()              \
   *_sdaDirReg &= ~_sdaBitMask;    \
   if(_pullups) { *_sdaPortReg |= _sdaBitMask; }
+#endif // ARDUINO_ARCH_STM32
 
 
 // set SCL high and to input (releases pin) (i.e. change to input, turn on pullup)
 // The SCL may not become HIGH output. Therefore the pin is first set to input,
 // after that, a pullup resistor is switched on if needed.
+#if defined(ARDUINO_ARCH_STM32)
+#define i2c_scl_hi()                             \
+  I2C_SET_MODE_HIGH(_sclDirReg, _sclModeShift);  \
+  if(_pullups) { *_sclPortReg |= _sclBitMask; }
+#else
 #define i2c_scl_hi()              \
   *_sclDirReg &= ~_sclBitMask;    \
   if(_pullups) { *_sclPortReg |= _sclBitMask; }
+#endif // ARDUINO_ARCH_STM32
 
 
 // Read the bit value of the pin
 // Note that is the pin can also be read when it is an output.
+#if defined(ARDUINO_ARCH_STM32)
+#define i2c_sda_read()   ((*_sdaPinReg & _sdaBitMask) ? 1 : 0)
+#define i2c_scl_read()   ((*_sclPinReg & _sclBitMask) ? 1 : 0)
+#else
 #define i2c_sda_read()   ((uint8_t) (*_sdaPinReg & _sdaBitMask) ? 1 : 0)
 #define i2c_scl_read()   ((uint8_t) (*_sclPinReg & _sclBitMask) ? 1 : 0)
+#endif
 
 
 //
@@ -124,19 +192,44 @@ SoftwareWire::SoftwareWire(uint8_t sdaPin, uint8_t sclPin, boolean pullups, bool
   setTimeout( 1000L);
 
   // Turn Arduino pin numbers into PORTx, DDRx, and PINx
+#if defined(ARDUINO_ARCH_STM32)
+  GPIO_TypeDef* port;
+#else
   uint8_t port;
+#endif
+
 
   port = digitalPinToPort(_sdaPin);
   _sdaBitMask  = digitalPinToBitMask(_sdaPin);
+#if defined(ARDUINO_ARCH_STM32)
+  // By default, MODE/MODER bit field is 2 bytes wide
+  set_GPIO_Port_Clock(STM_PORT(digitalPinToPinName(_sdaPin)));
+  _sdaModeShift = 2 * __CLZ(__RBIT(_sdaBitMask));
+#endif
   _sdaPortReg  = portOutputRegister(port);
   _sdaDirReg   = portModeRegister(port);
   _sdaPinReg   = portInputRegister(port);      // PinReg is the input register, not the Arduino pin.
 
   port = digitalPinToPort(_sclPin);
   _sclBitMask  = digitalPinToBitMask(_sclPin);
+#if defined(ARDUINO_ARCH_STM32)
+  // By default, MODE/MODER bit field is 2 bytes wide
+  set_GPIO_Port_Clock(STM_PORT(digitalPinToPinName(_sclPin)));
+  _sclModeShift = 2 * __CLZ(__RBIT(_sclBitMask));
+#endif
   _sclPortReg  = portOutputRegister(port);
   _sclDirReg   = portModeRegister(port);
   _sclPinReg   = portInputRegister(port);
+
+#if defined(ARDUINO_ARCH_STM32) && defined(STM32F1xx)
+  // Manage GPIOx_CRL / GPIOx_CRH depending on pin [0..7] or pin [8..16]
+  if (__CLZ(__RBIT(_sdaBitMask)) > 7U) {
+    _sdaDirReg ++;
+  }
+  if (__CLZ(__RBIT(_sclBitMask)) > 7U) {
+    _sclDirReg ++;
+  }
+#endif
 }
 
 
@@ -520,6 +613,20 @@ void SoftwareWire::printStatus( Print& Ser)
   Ser.print(F("  _sclBitMask = 0x"));
   Ser.println(_sclBitMask, HEX);
   Ser.print(F("  _sdaPortReg = "));
+
+#if defined(ARDUINO_ARCH_STM32)
+  Ser.println( (uint32_t) _sdaPortReg, HEX);
+  Ser.print(F("  _sclPortReg = "));
+  Ser.println( (uint32_t) _sclPortReg, HEX);
+  Ser.print(F("  _sdaDirReg = "));
+  Ser.println( (uint32_t) _sdaDirReg, HEX);
+  Ser.print(F("  _sclDirReg = "));
+  Ser.println( (uint32_t) _sclDirReg, HEX);
+  Ser.print(F("  _sdaPinReg = "));
+  Ser.println( (uint32_t) _sdaPinReg, HEX);
+  Ser.print(F("  _sclPinReg = "));
+  Ser.println( (uint32_t) _sclPinReg, HEX);
+#else
   Ser.println( (uint16_t) _sdaPortReg, HEX);
   Ser.print(F("  _sclPortReg = "));
   Ser.println( (uint16_t) _sclPortReg, HEX);
@@ -531,6 +638,7 @@ void SoftwareWire::printStatus( Print& Ser)
   Ser.println( (uint16_t) _sdaPinReg, HEX);
   Ser.print(F("  _sclPinReg = "));
   Ser.println( (uint16_t) _sclPinReg, HEX);
+#endif
 
   Ser.print(F("  line state sda = "));
   Ser.println(i2c_sda_read());
